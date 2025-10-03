@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0ea5e9" />
+  <title>Atina Roadtrip — Uçuşlu Plan (PWA)</title>
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Icons (manifest ile eşleşmeli) -->
+  <link rel="icon" sizes="192x192" href="icons/icon-192.png" />
+  <link rel="icon" sizes="512x512" href="icons/icon-512.png" />
+
+  <!-- iOS ekleri (opsiyonel ama faydalı) -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+
+  <!-- Leaflet CSS (istersen /vendor/leaflet.css olarak yerel ekleyebiliriz) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <!-- Uygulama stilleri (küçük kritik yükseklik düzeltmesi; detaylar styles.css’de) -->
+  <style>
+    :root { --vh: 1vh; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; }
+    body { margin:0; padding:0; display:flex; height:calc(var(--vh) * 100); font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; overflow:hidden; }
+    #mapWrap { position:relative; flex:1; }
+    #map { position:absolute; inset:0; }
+    #infopanel { width: 360px; background:#fff; padding:12px; border-right:1px solid #ccc; overflow:auto; }
+    #sidebar { width: 420px; background:#f8f9fa; padding:12px; border-left:1px solid #ccc; overflow:auto; }
+    .topbar { position:absolute; right:12px; top:12px; z-index:1100; display:flex; gap:8px; }
+    .modeBtn, .btn { padding:8px 12px; border-radius:12px; border:1px solid #d0d7de; background:#fff; font-size:13px; text-decoration:none; color:#0b57d0; box-shadow:0 1px 6px rgba(0,0,0,.1); cursor:pointer; }
+    .fab { position:fixed; z-index:1000; right:12px; width:52px; height:52px; border-radius:50%; border:1px solid #d0d7de; background:#fff; box-shadow:0 6px 18px rgba(0,0,0,.15); display:none; align-items:center; justify-content:center; font-size:22px; }
+    #fabInfo { bottom: 12px; }  #fabRoute { bottom: 76px; }
+    .sheet { position:fixed; z-index:999; left:0; right:0; bottom: -70vh; height:70vh; background:#fff; border-top-left-radius:16px; border-top-right-radius:16px; box-shadow: 0 -10px 30px rgba(0,0,0,.25); display:none; }
+    .sheet.open { display:block; transform: translateY(-70vh); transition: transform .28s ease; }
+    .sheet .handle { width:48px; height:5px; background:#d0d7de; border-radius:4px; margin:8px auto; }
+    .sheet .content { height: calc(70vh - 24px); overflow:auto; padding:0 12px 16px; }
+    .drawer { position:fixed; z-index:999; top:0; bottom:0; width:88%; max-width:420px; right:-100%; background:#f8f9fa; border-left:1px solid #ccc; padding:12px; overflow:auto; display:none; }
+    .drawer.open { display:block; right:0; transition: right .28s ease; }
+    .overlay { position:fixed; inset:0; background:#fff; z-index:1200; display:none; }
+    .overlay.open { display:block; }
+    .overlay .head { position:sticky; top:0; background:#fff; padding:10px 12px; border-bottom:1px solid #e5e7eb; display:flex; align-items:center; gap:8px; }
+    .overlay h2 { margin:0; font-size:18px; }
+    .overlay .close { margin-left:auto; }
+    .grid { padding:12px; display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap:12px; }
+    .card { border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; background:#fff; box-shadow:0 1px 6px rgba(0,0,0,.06); display:block; text-decoration:none; color:inherit; }
+    .card img { width:100%; height:140px; object-fit:cover; display:block; }
+    /* Sol paneli esnek sütun yap */
+#infopanel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;     /* Firefox/Edge overflow için */
+}
+
+/* İçerik alanı kaydırılabilir */
+#info-content {
+  overflow: auto;
+}
+
+/* Footer şerit */
+.panel-footer {
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid #e5e7eb; /* daha soft */
+  color: #6b7280;                /* metin için nötr gri */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;               /* tiny yerine sabit */
+}
+
+
+    @media (max-width: 1024px){
+      #infopanel, #sidebar { display:none; }
+      .fab { display:flex; }
+    }
+    @media (min-width: 1025px){
+      .fab, .sheet, .drawer { display:none !important; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobil FAB butonları -->
+  <button id="fabInfo" class="fab" aria-label="Bilgi paneli">ℹ️</button>
+  <button id="fabRoute" class="fab" aria-label="Rota paneli">🗺️</button>
+
+  <!-- Sol (masaüstü) bilgi paneli -->
+  <aside id="infopanel" aria-label="Seçili Lokasyon Bilgisi">
+    <h3>Seçili Lokasyon</h3>
+    <div class="muted">Bir lokasyon seçtiğinizde fotoğraf, hava ve öneriler burada görünür.</div>
+    <div id="info-content"></div>
+    <div class="panel-footer">
+      <small id="appVersion" class="tiny">Version</small>
+    </div>
+  </aside>
+
+  <!-- Harita -->
+  <div id="mapWrap">
+    <div id="map" role="application" aria-label="Harita"></div>
+    <!-- Harita üstü (sağ üst) mod butonları -->
+    <div class="topbar">
+      <button id="btnLocations" class="modeBtn" aria-haspopup="dialog">📍 Lokasyonlar</button>
+      <button id="btnFoods" class="modeBtn" aria-haspopup="dialog">🍽️ Yeme-İçme</button>
+    </div>
+  </div>
+
+  <!-- Sağ (masaüstü) rota paneli -->
+  <aside id="sidebar" aria-label="Gün Gün Rota">
+    <h3 id="reset">Gün Gün Rota</h3>
+    <div class="toolbar">
+      <label for="routeToggle">Rota:</label>
+      <select id="routeToggle">
+        <option value="main">Ana Rota (Peloponez)</option>
+        <option value="alt">Alternatif Rota (Pire/Adalar & Güney Kıyı)</option>
+      </select>
+      <label for="weatherToggle" style="margin-left:auto; display:flex; align-items:center; gap:6px;">
+        <input id="weatherToggle" type="checkbox" checked /> Haritada hava
+      </label>
+    </div>
+    <div class="muted">Gün/durak tıklayınca rota vurgulanır. Gün başlığı/marker tıklayınca seçili güne ait hava rozetleri haritada görünür.</div>
+    <div id="days-list"></div>
+  </aside>
+
+  <!-- Mobil alt sheet: Bilgi -->
+  <div id="sheetInfo" class="sheet" role="dialog" aria-modal="true" aria-label="Seçili Lokasyon Bilgi">
+    <div class="handle" draggable="false"></div>
+    <div class="content">
+      <h3 style="margin:8px 0 6px">Seçili Lokasyon</h3>
+      <div id="info-content-mobile"></div>
+    </div>
+  </div>
+
+  <!-- Mobil sağ drawer: Rota listesi -->
+  <aside id="drawerRoute" class="drawer" aria-label="Gün Gün Rota (Mobil)">
+    <h3 id="resetMobile">Gün Gün Rota</h3>
+    <div class="toolbar">
+      <label for="routeToggleMobile">Rota:</label>
+      <select id="routeToggleMobile">
+        <option value="main">Ana Rota (Peloponez)</option>
+        <option value="alt">Alternatif Rota (Pire/Adalar & Güney Kıyı)</option>
+      </select>
+      <label for="weatherToggleMobile" style="margin-left:auto; display:flex; align-items:center; gap:6px;">
+        <input id="weatherToggleMobile" type="checkbox" checked /> Haritada hava
+      </label>
+    </div>
+    <div class="muted">Gün/durak tıklayınca rota vurgulanır; gün başlığı/marker tıklayınca seçili güne ait hava rozetleri görünür.</div>
+    <div id="days-list-mobile"></div>
+  </aside>
+
+  <!-- Tam ekran: Lokasyonlar -->
+  <section id="modeLocations" class="overlay" role="dialog" aria-modal="true" aria-label="Lokasyonlar">
+    <div class="head">
+      <h2>📍 Tüm Lokasyonlar</h2>
+      <button class="btn close" data-close="#modeLocations">Kapat (Esc)</button>
+    </div>
+    <div id="gridLocations" class="grid" aria-live="polite"></div>
+  </section>
+
+  <!-- Tam ekran: Yeme-İçme -->
+  <section id="modeFoods" class="overlay" role="dialog" aria-modal="true" aria-label="Yeme-İçme">
+    <div class="head">
+      <h2>🍽️ Yeme-İçme (Yerel Lezzetler & İçecekler)</h2>
+      <button class="btn close" data-close="#modeFoods">Kapat (Esc)</button>
+    </div>
+    <div id="gridFoods" class="grid" aria-live="polite"></div>
+  </section>
+
+  <!-- Leaflet JS (istersen yerel /vendor/leaflet.js kullan) -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <!-- Uygulama JS -->
+  <script src="app.js"></script>
+
+  <!-- Service Worker kaydı -->
+  <script>
+    // Mobil tarayıcıların adres çubuğu yükseklik farkını düzelt
+    function setVh(){ document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px'); }
+    setVh(); addEventListener('resize', setVh);
+
+    if ('serviceWorker' in navigator) {
+      addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js').catch(console.error);
+      });
+    }
+  </script>
+</body>
+</html>
