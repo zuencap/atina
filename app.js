@@ -835,8 +835,19 @@ function renderPolylines(days){
   });
 }
 
+function getDaysForRoute(routeKey) {
+  switch (routeKey) {
+    case 'alt':
+      return daysAlt;
+    case 'alt2':
+      return daysAlt3;
+    default:
+      return daysMain;
+  }
+}
+
 function renderRoute(routeKey){
-  const days = routeKey==='alt' ? daysAlt : daysMain;
+  const days = getDaysForRoute(routeKey);
   resetView();
   renderRouteLists(days);
   renderPolylines(days);
@@ -850,7 +861,7 @@ for (const [name, coords] of Object.entries(places)) {
     qsa('.place').forEach(c=> c.style.background='');
     qsa('.place').filter(e=> e.innerText.includes(name)).forEach(e=> e.style.background='#d1ecf1');
 
-    const days = currentRouteKey==='alt' ? daysAlt : daysMain;
+        const days = getDaysForRoute(currentRouteKey);
     const idx = stopToDayIndex[name];
     if (idx !== undefined) {
       polylines.forEach((pl, i) => pl && pl.setStyle({ opacity: i===idx?1:0.1 }));
