@@ -161,12 +161,12 @@ const places = {
 const activities = { "Atina Uluslararası Havalimanı (ATH)":"Varış/transfer, check-in & güvenlik/boarding","Atina":"Akropolis, Plaka, Lycabettus","Sounion":"Poseidon Tapınağı gün batımı, plaj","Delphi":"Apollo Tapınağı, müze, Arachova","Korinthos Kanalı":"Seyir noktası, fotoğraf","Nafplio":"Eski Şehir, Palamidi Kalesi","Epidavros":"Antik tiyatro","Mykene":"Aslanlı Kapı, ören yeri","Tolo":"Plaj ve yüzme","Pire Limanı":"Feribot/deniz otobüsü kalkış noktası","Hydra":"Arabasız ada — liman, plajlar, taş sokaklar","Paros":"Naousa/Parikia, plajlar; Antiparos geçişi","Antiparos":"Sakin ada havası, kasaba ve mağara","Glyfada":"Sahil semti — kafe/alışveriş","Paralia Varkiza":"Popüler plaj — deniz günü" };
 
 const weather = {
-  "2025-10-04": { ath:{txt:"⛅ 24°/18°"}, del:{txt:"⛅ 22°/13°"}, naf:{txt:"🌤 25°/16°"}, hyd:{txt:"⛅ 24°/19°"}, par:{txt:"🌬️⛅ 23°/18°"} },
-  "2025-10-05": { ath:{txt:"🌦 23°/17°"}, del:{txt:"🌦 20°/12°"}, naf:{txt:"🌦 24°/16°"}, hyd:{txt:"🌦 22°/18°"}, par:{txt:"🌦 22°/17°"} },
+  "2025-10-04": { ath:{txt:"⛅ 24°/18°"}, del:{txt:"⛅ 22°/13°"}, naf:{txt:"🌤 25°/17°"}, hyd:{txt:"⛅ 24°/19°"}, par:{txt:"🌬️⛅ 24°/19°"} },
+  "2025-10-05": { ath:{txt:"🌧 22°/17°"}, del:{txt:"🌧 19°/12°"}, naf:{txt:"🌧 23°/16°"}, hyd:{txt:"🌧 22°/18°"}, par:{txt:"🌧 22°/18°"} },
   "2025-10-06": { ath:{txt:"🌤 24°/16°"}, del:{txt:"🌤 22°/12°"}, naf:{txt:"☀️ 26°/17°"}, hyd:{txt:"🌤 24°/18°"}, par:{txt:"🌤 24°/18°"} },
   "2025-10-07": { ath:{txt:"☀️ 25°/16°"}, del:{txt:"☀️ 23°/12°"}, naf:{txt:"☀️ 27°/17°"}, hyd:{txt:"☀️ 25°/19°"}, par:{txt:"☀️ 25°/19°"} },
   "2025-10-08": { ath:{txt:"⛅ 24°/17°"}, del:{txt:"⛅ 22°/13°"}, naf:{txt:"⛅ 26°/17°"}, hyd:{txt:"⛅ 24°/19°"}, par:{txt:"🌬️⛅ 24°/19°"} },
-  "2025-10-09": { ath:{txt:"🌧 22°/16°"}, del:{txt:"🌧 19°/12°"}, naf:{txt:"🌧 23°/16°"}, hyd:{txt:"🌧 21°/17°"}, par:{txt:"🌧 21°/17°"} },
+  "2025-10-09": { ath:{txt:"⛈️ 22°/16°"}, del:{txt:"🌧 19°/12°"}, naf:{txt:"🌧 23°/16°"}, hyd:{txt:"⛈️ 21°/17°"}, par:{txt:"⛈️ 21°/17°"} },
   "2025-10-10": { ath:{txt:"🌥 23°/17°"}, del:{txt:"🌥 21°/12°"}, naf:{txt:"🌥 24°/16°"}, hyd:{txt:"🌥 22°/18°"}, par:{txt:"🌥 22°/18°"} }
 };
 function weatherFor(stop, dateKey){
