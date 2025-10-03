@@ -47,6 +47,11 @@
     .overlay h2 { margin:0; font-size:18px; }
     .overlay .close { margin-left:auto; }
     .grid { padding:12px; display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap:12px; }
+    /* Make overlay grid scrollable */
+    .overlay .grid {
+      max-height: calc(100vh - 56px); /* 56px = approx. header height */
+      overflow-y: auto;
+    }
     .card { border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; background:#fff; box-shadow:0 1px 6px rgba(0,0,0,.06); display:block; text-decoration:none; color:inherit; }
     .card img { width:100%; height:140px; object-fit:cover; display:block; }
     /* Sol paneli esnek sütun yap */
