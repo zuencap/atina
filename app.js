@@ -473,7 +473,6 @@ async function buildFoodsGrid(){
 }
 
 /* ----------------- İlk çizim ----------------- */
-let currentRouteKey = routeToggle ? routeToggle.value : 'main';
 renderRoute(currentRouteKey);
 
 // Basit smoke testler (konsolda)

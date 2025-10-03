@@ -1,21 +1,28 @@
 {
-  "name": "HTML \u2192 PWA Wrapper",
-  "short_name": "HTML Wrapper",
-  "start_url": "./?start=last",
-  "scope": "./",
+  "id": "/?app=atina-roadtrip",
+  "name": "Atina Roadtrip",
+  "short_name": "Roadtrip",
+  "description": "Atina ve çevresi için gün gün rota, lokasyon önerileri, hava rozetleri ve tam ekran modlar.",
+  "lang": "tr-TR",
+  "start_url": "/index.html",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#0b1220",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
   "theme_color": "#0ea5e9",
+  "categories": ["travel", "maps", "itinerary"],
   "icons": [
     {
-      "src": "./icons/192.png",
+      "src": "/icons/192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "./icons/512.png",
+      "src": "/icons/512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
