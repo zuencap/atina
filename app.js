@@ -317,8 +317,17 @@ function renderRouteLists(days){
     dayDiv.appendChild(planList);
 
     // desktop & mobile kopyala
-    daysListDesktop?.appendChild(dayDiv.cloneNode(true));
+    const dayDivClone = dayDiv.cloneNode(true);
+    daysListDesktop?.appendChild(dayDivClone);
     daysListMobile?.appendChild(dayDiv);
+
+    // Re-attach listeners to the clone
+    dayDivClone.querySelector('h4').onclick = dayHeader.onclick;
+    const placeDivs = dayDiv.querySelectorAll('.place');
+    const clonedPlaceDivs = dayDivClone.querySelectorAll('.place');
+    clonedPlaceDivs.forEach((clonedPlaceDiv, i) => {
+        clonedPlaceDiv.onclick = placeDivs[i].onclick;
+    });
   });
 }
 
