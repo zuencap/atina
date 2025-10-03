@@ -14,8 +14,10 @@ import {
 
 // Show version in footer
 (function(){
-  const el = document.getElementById("appVersion");
-  if (el) el.textContent = "Version " + APP_VERSION;
+  let el = document.getElementById('appVersion');
+  if (el) el.textContent = 'Version ' + APP_VERSION;
+  el = document.getElementById('appVersion-mobile');
+  if (el) el.textContent = 'Version ' + APP_VERSION;
 })();
 /* app.js — Atina Roadtrip PWA (Lokasyon + Yeme-İçme tek sayfa) */
 
